@@ -8,6 +8,8 @@ import androidx.lifecycle.ViewModelProvider;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.contactroom.R;
@@ -15,6 +17,7 @@ import com.example.contactroom.databinding.ActivityMainBinding;
 import com.example.contactroom.model.Contacts;
 import com.example.contactroom.viewmodel.ContactsViewModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
@@ -22,6 +25,8 @@ public class MainActivity extends AppCompatActivity {
     private static final int NEW_CONTACT_ACTIVITY_REQUEST = 1;
     public ContactsViewModel contactsViewModel;
     private ActivityMainBinding binding;
+    private ArrayList<String> contactsArrayList;
+    private ArrayAdapter<String> arrayAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,19 +37,21 @@ public class MainActivity extends AppCompatActivity {
         contactsViewModel = new ViewModelProvider.AndroidViewModelFactory(MainActivity.this.getApplication()).create(ContactsViewModel.class);
 
         contactsViewModel.getAllContacts().observe(this, contacts -> {
-
-            StringBuilder tekst = new StringBuilder();
+            contactsArrayList = new ArrayList<>();
+            int index_listy=1;
             for (Contacts contact: contacts) {
-                tekst.append(contact.getId()).append(". ").append(contact.getName()).append("\n");
+                contactsArrayList.add(index_listy+ ". " +contact.getName());
+                index_listy++;
             }
-            binding.textView.setText(tekst);
+            arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, contactsArrayList);
+            binding.listView.setAdapter(arrayAdapter);
+
         });
 
         binding.button.setOnClickListener(view -> {
             Intent intent = new Intent(this, AddContactActivity.class);
             startActivityForResult(intent, NEW_CONTACT_ACTIVITY_REQUEST);
         });
-
     }
 
     @Override
@@ -55,8 +62,8 @@ public class MainActivity extends AppCompatActivity {
         {
             String name = data.getStringExtra("name");
             String phoneNumber = data.getStringExtra("phoneNumber");
-            Log.d("tagson", name);
-            Log.d("tagson", phoneNumber);
+            Log.d("insertContactTAG", name);
+            Log.d("insertContactTAG", phoneNumber);
 
             Contacts contact = new Contacts(name, phoneNumber);
             ContactsViewModel.insertContact(contact);

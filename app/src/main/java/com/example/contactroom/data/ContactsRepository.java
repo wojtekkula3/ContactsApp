@@ -37,4 +37,12 @@ public class ContactsRepository {
 
         });
     }
+
+    public void deleteAllContacts()
+    {
+        ContactsRoomDatabase.dataWriteExecutor.execute(()->{
+            contactsDao.deleteAll();
+
+        });
+    }
 }

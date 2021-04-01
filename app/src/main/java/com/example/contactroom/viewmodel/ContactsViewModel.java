@@ -32,4 +32,8 @@ public class ContactsViewModel extends AndroidViewModel {
     {
         repository.insertContact(contacts);
     }
+
+    public static void deleteAllContacts(){ repository.deleteAllContacts();}
+
+
 }
