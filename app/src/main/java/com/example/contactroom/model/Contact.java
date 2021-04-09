@@ -5,7 +5,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "contacts_table")
-public class Contacts {
+public class Contact {
     @PrimaryKey(autoGenerate = true)
     private int id;
     @ColumnInfo(name = "name")
@@ -13,7 +13,7 @@ public class Contacts {
     @ColumnInfo(name = "number")
     private String number;
 
-    public Contacts(String name, String number) {
+    public Contact(String name, String number) {
         this.name = name;
         this.number = number;
     }

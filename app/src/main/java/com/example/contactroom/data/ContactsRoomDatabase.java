@@ -8,7 +8,7 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
-import com.example.contactroom.model.Contacts;
+import com.example.contactroom.model.Contact;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -20,7 +20,7 @@ import java.util.concurrent.Executors;
 
 
 // Klasa abstrakcyjna, ponieważ jest taki jest wymóg, by nie można było utworzyć instancji tej klasy
-@Database(entities = {Contacts.class}, version = 1, exportSchema = false)
+@Database(entities = {Contact.class}, version = 1, exportSchema = false)
 public abstract class ContactsRoomDatabase extends RoomDatabase {
 
     public abstract ContactsDao contactsDao();
@@ -65,10 +65,10 @@ public abstract class ContactsRoomDatabase extends RoomDatabase {
                         ContactsDao contactsDao = INSTANCE.contactsDao();
                         contactsDao.deleteAll();
 
-                        Contacts contacts = new Contacts("Karol","123456789");
-                        Contacts contacts2 = new Contacts("Marcin","123456788");
-                        contactsDao.insert(contacts);
-                        contactsDao.insert(contacts2);
+                        Contact contact = new Contact("Karol","123456789");
+                        Contact contact2 = new Contact("Marcin","123456788");
+                        contactsDao.insert(contact);
+                        contactsDao.insert(contact2);
                     });
                 }
             };

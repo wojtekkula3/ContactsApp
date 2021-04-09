@@ -7,8 +7,9 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Update;
 
-import com.example.contactroom.model.Contacts;
+import com.example.contactroom.model.Contact;
 
 import java.util.List;
 
@@ -16,15 +17,21 @@ import java.util.List;
 @Dao
 public interface ContactsDao {
 
+    @Query("SELECT * FROM contacts_table")
+    LiveData<List<Contact>> getAllContacts();
+
+    @Query("SELECT * FROM contacts_table WHERE contacts_table.id == :id")
+    LiveData<Contact> getContact(int id);
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    void insert(Contacts contact);
+    void insert(Contact contact);
 
     @Delete
-    void delete(Contacts contacts);
+    void delete(Contact contact);
 
     @Query("DELETE FROM contacts_table")
     void deleteAll();
 
-    @Query("SELECT * FROM contacts_table")
-    LiveData<List<Contacts>> getContacts();
+    @Update
+    void update(Contact contact);
 }
