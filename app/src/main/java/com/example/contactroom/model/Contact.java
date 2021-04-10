@@ -4,8 +4,12 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.io.Serializable;
+
+// Implementujemy interfejs Seriazliable tylko dla tego żeby mieć możliwość wysłania obiektu do
+// innej aktywności ( intent.putExtra("contact",contact) )
 @Entity(tableName = "contacts_table")
-public class Contact {
+public class Contact implements Serializable {
     @PrimaryKey(autoGenerate = true)
     private int id;
     @ColumnInfo(name = "name")
