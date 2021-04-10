@@ -2,26 +2,29 @@ package com.example.contactroom.activities;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.TextView;
 
-import com.example.contactroom.R;
+import com.example.contactroom.adapters.ContactListRecyclerViewAdapter;
 import com.example.contactroom.databinding.ActivityMainBinding;
-import com.example.contactroom.model.Contacts;
+import com.example.contactroom.model.Contact;
 import com.example.contactroom.viewmodel.ContactsViewModel;
 
-import java.util.List;
+import java.io.Serializable;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ContactListRecyclerViewAdapter.OnContactClickListener{
 
     private static final int NEW_CONTACT_ACTIVITY_REQUEST = 1;
+    private static final int EDIT_CONTACT_ACTIVITY_REQUEST = 2;
     public ContactsViewModel contactsViewModel;
     private ActivityMainBinding binding;
+    private ContactListRecyclerViewAdapter adapter;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,21 +32,23 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        contactsViewModel = new ViewModelProvider.AndroidViewModelFactory(MainActivity.this.getApplication()).create(ContactsViewModel.class);
+        binding.contactsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        contactsViewModel = new ViewModelProvider.AndroidViewModelFactory(MainActivity.this.getApplication()).create(ContactsViewModel.class);
         contactsViewModel.getAllContacts().observe(this, contacts -> {
 
-            StringBuilder tekst = new StringBuilder();
-            for (Contacts contact: contacts) {
-                tekst.append(contact.getId()).append(". ").append(contact.getName()).append("\n");
-            }
-            binding.textView.setText(tekst);
+            // Set Adapter
+            adapter = new ContactListRecyclerViewAdapter(this, contacts, this);
+            binding.contactsRecyclerView.setAdapter(adapter);
+
+
         });
 
         binding.button.setOnClickListener(view -> {
             Intent intent = new Intent(this, AddContactActivity.class);
             startActivityForResult(intent, NEW_CONTACT_ACTIVITY_REQUEST);
         });
+
 
     }
 
@@ -55,11 +60,38 @@ public class MainActivity extends AppCompatActivity {
         {
             String name = data.getStringExtra("name");
             String phoneNumber = data.getStringExtra("phoneNumber");
-            Log.d("tagson", name);
-            Log.d("tagson", phoneNumber);
+            Log.d("insertContactTAG", name);
+            Log.d("insertContactTAG", phoneNumber);
 
-            Contacts contact = new Contacts(name, phoneNumber);
+            Contact contact = new Contact(name, phoneNumber);
             ContactsViewModel.insertContact(contact);
         }
+        else if(requestCode==EDIT_CONTACT_ACTIVITY_REQUEST && resultCode==RESULT_OK)
+        {
+            Contact contact = (Contact)data.getSerializableExtra("contact");
+            Log.d("editedContact", contact.getName());
+            ContactsViewModel.updateContact(contact);
+        }
+    }
+
+    @Override
+    public void onContactClick(int position) {
+        Log.d("onClickTAG", "onContactClick: "+ position+" clicked");
+    }
+
+    @Override
+    public void onDeleteButtonClick(int position) {
+        Contact contact = contactsViewModel.allContacts.getValue().get(position);
+        Log.d("DeleteTAG", contact.getName() + " " + contact.getNumber());
+        ContactsViewModel.deleteOneContact(contact);
+    }
+
+    public void onEditButtonClick(int position)
+    {
+        Contact contact = contactsViewModel.allContacts.getValue().get(position);
+        Intent intent = new Intent(this, EditContactActivity.class);
+        intent.putExtra("contact", contact);
+        startActivityForResult(intent,EDIT_CONTACT_ACTIVITY_REQUEST);
+
     }
 }
